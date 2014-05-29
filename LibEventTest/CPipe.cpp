@@ -28,6 +28,12 @@ void CPipe::Send(const char* data, size_t len)
 	bufferevent_write(ev_bev_, data, len);
 }
 
+void CPipe::OnRecv(const char* data, size_t len)
+{
+	// echo
+	bufferevent_write(ev_bev_, data, len);
+}
+
 void CPipe::ReadCB(bufferevent* bev, void* user_data)
 {
 	auto pipe = static_cast<CPipe*>(user_data);
@@ -39,16 +45,7 @@ void CPipe::ReadCB(bufferevent* bev, void* user_data)
 	int n;
 	while ((n = evbuffer_remove(input, buf, sizeof(buf))) > 0)
 	{
-		buf[n] = 0;
-		cout << "recv: " << n << " " << buf << endl;
-		if (strstr(buf, "broadcast"))
-		{
-			pipe->reactor_->Broadcast(buf, n);
-		}
-		else
-		{
-			bufferevent_write(bev, buf, n);
-		}
+		pipe->OnRecv(buf, n);
 	}
 }
 

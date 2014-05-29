@@ -10,6 +10,7 @@ public:
 	~CPipe();
 	
 	void Send(const char*, size_t size);
+	void OnRecv(const char*, size_t size);
 private:
 	static void ReadCB(bufferevent* bev, void* user_data);
 	static void WriteCB(bufferevent* bev, void* user_data);
