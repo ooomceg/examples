@@ -1,30 +1,33 @@
 #pragma once
-#include <event2/util.h>
 
 class CPipe;
+class INetEventHandler;
 struct event_base;
 struct evconnlistener;
 struct event;
 
 class CPipeReactor
 {
+	friend class CEventCallback;
 	typedef list<CPipe*> LstPipe;
 public:
 	CPipeReactor();
 	~CPipeReactor();
+
+	void SetEventHandler(INetEventHandler* handler);
 
 	void AddPipe(CPipe*);
 	void DelPipe(CPipe*);
 
 	void Broadcast(const char* data, size_t size);
 
-	void Start(int port);
-	void End();
+	bool Listen(int port);
+	CPipe* Connect(const char* ip, int port);
+
+	void Close();
+
 private:
-	static void ListenerCB(evconnlistener *, evutil_socket_t, sockaddr *, int socklen, void *);
-	static void SignalCB(evutil_socket_t, short, void *);
-	static void TimeoutCB(evutil_socket_t, short, void *);
-private:
+	INetEventHandler*	event_handler_;
 	event_base*			ev_base_;
 	evconnlistener*		ev_listener_;
 	event*				ev_event_;

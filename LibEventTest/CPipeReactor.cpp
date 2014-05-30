@@ -1,20 +1,22 @@
 #include "stdafx.h"
 #include "CPipeReactor.h"
 #include "CPipe.h"
+#include "INetEventHandler.h"
+#include "CEventCallback.h"
 
+#include <event2/listener.h>
+#include <event2/event_struct.h>
 #include <event2/bufferevent.h>
 #include <event2/buffer.h>
-#include <event2/listener.h>
-#include <event2/util.h>
-#include <event2/event.h>
-#include <event2/event_struct.h>
 
 using namespace std;
 
 CPipeReactor::CPipeReactor()
+	: ev_base_(NULL)
+	, ev_listener_(NULL)
+	, ev_event_(NULL)
 {
-	ev_base_ = event_base_new();
-	assert(ev_base_);
+	event_handler_ = new CDefaultNetEventHandler;
 }
 
 CPipeReactor::~CPipeReactor()
@@ -23,40 +25,60 @@ CPipeReactor::~CPipeReactor()
 	assert(!ev_base_);
 	assert(!ev_event_);
 
+	delete event_handler_;
+	event_handler_ = NULL;
+
 	for (auto pipe : lst_pipe_)
 	{
 		delete pipe;
 	}
 }
 
-void CPipeReactor::Start(int port)
+void CPipeReactor::SetEventHandler(INetEventHandler* handler)
 {
+	if (event_handler_)
+	{
+		delete event_handler_;
+		event_handler_ = 0;
+	}
+	event_handler_ = handler;
+}
+
+bool CPipeReactor::Listen(int port)
+{
+	assert(!ev_base_);
+	ev_base_ = event_base_new();
+	if (!ev_base_)
+	{
+		return false;
+	}
+
 	sockaddr_in sin;
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(port);
 
 	// register conn listener
-	ev_listener_ = evconnlistener_new_bind(ev_base_, ListenerCB, (void*)this, 
+	ev_listener_ = evconnlistener_new_bind(ev_base_, CEventCallback::ListenerCB, (void*)this, 
 		LEV_OPT_REUSEABLE | LEV_OPT_CLOSE_ON_FREE, -1, (sockaddr*)&sin, sizeof(sin));
 	if (!ev_listener_)
 	{
-		cerr << "listen failed!" << endl;
-		return;
+		cerr << "listen failed!" << strerror(errno) << " " << GetLastError() << endl;
+		return false;
 	}
 
 	// register event handler
-	ev_event_ = evsignal_new(ev_base_, SIGINT, SignalCB, (void*)this);
+	ev_event_ = evsignal_new(ev_base_, SIGINT, CEventCallback::SignalCB, (void*)this);
 	if (!ev_event_ || event_add(ev_event_, NULL) < 0)
 	{
 		cerr << "create signal event failed!" << endl;
-		return;
+		return false;
 	}
 
 	// register a timer
 	event* ev_event_timeout = new event;
 	// flags: 0 , EV_PERSIST 
-	event_assign(ev_event_timeout, ev_base_, -1, EV_PERSIST, TimeoutCB, (void*)ev_event_timeout);
+	event_assign(ev_event_timeout, ev_base_, -1, EV_PERSIST, CEventCallback::TimeoutCB, (void*)ev_event_timeout);
 
 	timeval tv;
 	evutil_timerclear(&tv);
@@ -64,9 +86,51 @@ void CPipeReactor::Start(int port)
 	event_add(ev_event_timeout, &tv);
 
 	cout << "server start listen at " << port << endl;
+	event_handler_->OnStartListen();
 
 	//begin event loop
 	event_base_dispatch(ev_base_);
+
+	return true;
+}
+
+CPipe* CPipeReactor::Connect(const char* ip, int port)
+{
+	assert(!ev_base_);
+
+	ev_base_ = event_base_new();
+	if (!ev_base_)
+	{
+		return NULL;
+	}
+
+	bufferevent* bev = bufferevent_socket_new(ev_base_, -1, BEV_OPT_CLOSE_ON_FREE);
+	if (!bev)
+	{
+		return NULL;
+	}
+
+	sockaddr_in addr;
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	addr.sin_addr.S_un.S_addr = inet_addr(ip);
+
+	int sockfd = bufferevent_socket_connect(bev, (sockaddr*)&addr, sizeof(addr));
+	if (sockfd < 0)
+	{
+		cout << strerror(errno) << " " << GetLastError() << endl;
+		return NULL;
+	}
+
+	CPipe* pipe = new CPipe(this, bev);
+	AddPipe(pipe);
+
+	event_handler_->OnConnected(pipe);
+
+	event_base_dispatch(ev_base_);
+
+	return pipe;
 }
 
 void CPipeReactor::AddPipe(CPipe* pipe)
@@ -87,53 +151,25 @@ void CPipeReactor::Broadcast(const char* data, size_t size)
 	}
 }
 
-void CPipeReactor::End()
+void CPipeReactor::Close()
 {
-	event_free(ev_event_);
-	evconnlistener_free(ev_listener_);
-	event_base_free(ev_base_);
-
-	ev_event_ = NULL;
-	ev_listener_ = NULL;
-	ev_base_ = NULL;
-}
-
-void CPipeReactor::TimeoutCB(evutil_socket_t fd, short events, void* user_data)
-{
-	static int counter = 0;
-	++counter;
-	auto ev_event_timeout = static_cast<event*>(user_data);
-	cout << "on timer" << endl;
-	//delete ev_event_timeout;
-	if (counter == 10)
+	if (ev_event_)
 	{
-		event_del(ev_event_timeout);
-		delete ev_event_timeout;
+		event_free(ev_event_);
+		ev_event_ = NULL;
 	}
-}
-
-void CPipeReactor::ListenerCB(evconnlistener* listener, evutil_socket_t fd, 
-						sockaddr* sa, int socklen, void* user_data)
-{
-	auto reactor = static_cast<CPipeReactor*>(user_data);
-	event_base* base = reactor->ev_base_;
-
-	bufferevent* bev = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
-	if (!bev) {
-		fprintf(stderr, "Error constructing bufferevent!");
-		event_base_loopbreak(base);
-		return;
+	
+	if (ev_listener_)
+	{
+		evconnlistener_free(ev_listener_);
+		ev_listener_ = NULL;
+	}
+	
+	if (ev_base_)
+	{
+		event_base_free(ev_base_);
+		ev_base_ = NULL;
 	}
 
-	reactor->AddPipe(new CPipe(reactor, bev));
-}
-
-void CPipeReactor::SignalCB(evutil_socket_t sig, short events, void *user_data)
-{
-	auto reactor = static_cast<CPipeReactor*>(user_data);
-	timeval delay = { 2, 0 };
-
-	printf("Caught an interrupt signal; exiting cleanly in two seconds.\n");
-
-	event_base_loopexit(reactor->ev_base_, &delay);
+	event_handler_->OnNetworkClosed();
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CPipe.h"
 #include "CPipeReactor.h"
+#include "IPipeEventHandler.h"
 
 #include <event2/bufferevent.h>
 #include <event2/buffer.h>
@@ -10,6 +11,7 @@ CPipe::CPipe(CPipeReactor* reactor, bufferevent* bev)
 	: reactor_(reactor)
 	, ev_bev_(bev)
 {
+	event_handler_ = new CDefaultPipeEventHandler;
 	bufferevent_setcb(ev_bev_, ReadCB, WriteCB, EventCB, this);
 	bufferevent_enable(ev_bev_, EV_WRITE);
 	bufferevent_enable(ev_bev_, EV_READ);
@@ -17,6 +19,8 @@ CPipe::CPipe(CPipeReactor* reactor, bufferevent* bev)
 
 CPipe::~CPipe()
 {
+	delete event_handler_;
+	event_handler_ = NULL;
 	bufferevent_free(ev_bev_);
 	ev_bev_ = NULL;
 	reactor_->DelPipe(this);
@@ -30,8 +34,17 @@ void CPipe::Send(const char* data, size_t len)
 
 void CPipe::OnRecv(const char* data, size_t len)
 {
-	// echo
-	bufferevent_write(ev_bev_, data, len);
+	event_handler_->OnRecv(data, len);
+}
+
+void CPipe::SetEventHandler(IPipeEventHandler* handler)
+{
+	if (event_handler_)
+	{
+		delete event_handler_;
+		event_handler_ = NULL;
+	}
+	event_handler_ = handler;
 }
 
 void CPipe::ReadCB(bufferevent* bev, void* user_data)
@@ -45,7 +58,7 @@ void CPipe::ReadCB(bufferevent* bev, void* user_data)
 	int n;
 	while ((n = evbuffer_remove(input, buf, sizeof(buf))) > 0)
 	{
-		pipe->OnRecv(buf, n);
+		pipe->event_handler_->OnRecv(buf, n);
 	}
 }
 
@@ -57,6 +70,7 @@ void CPipe::WriteCB(bufferevent *bev, void *user_data)
 	if (evbuffer_get_length(output) == 0) {
 		//printf("flushed answer\n");
 		//delete pipe;
+		//pipe->event_handler_->OnSent();
 	}
 }
 
