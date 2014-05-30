@@ -1,0 +1,7 @@
+
+
+message S2C_Test
+{
+	required int32 id = 1;
+	required string str = 2;
+}

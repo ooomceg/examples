@@ -1,0 +1,1 @@
+protoc.exe Client2Server.proto Server2Client.proto --cpp_out=.
