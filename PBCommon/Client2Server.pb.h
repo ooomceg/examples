@@ -32,6 +32,7 @@ void protobuf_AssignDesc_Client2Server_2eproto();
 void protobuf_ShutdownFile_Client2Server_2eproto();
 
 class C2S_Test;
+class C2S_Hello;
 
 // ===================================================================
 
@@ -130,6 +131,91 @@ class C2S_Test : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static C2S_Test* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class C2S_Hello : public ::google::protobuf::Message {
+ public:
+  C2S_Hello();
+  virtual ~C2S_Hello();
+
+  C2S_Hello(const C2S_Hello& from);
+
+  inline C2S_Hello& operator=(const C2S_Hello& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const C2S_Hello& default_instance();
+
+  void Swap(C2S_Hello* other);
+
+  // implements Message ----------------------------------------------
+
+  C2S_Hello* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const C2S_Hello& from);
+  void MergeFrom(const C2S_Hello& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated int32 aa = 1;
+  inline int aa_size() const;
+  inline void clear_aa();
+  static const int kAaFieldNumber = 1;
+  inline ::google::protobuf::int32 aa(int index) const;
+  inline void set_aa(int index, ::google::protobuf::int32 value);
+  inline void add_aa(::google::protobuf::int32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
+      aa() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
+      mutable_aa();
+
+  // @@protoc_insertion_point(class_scope:C2S_Hello)
+ private:
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::RepeatedField< ::google::protobuf::int32 > aa_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  friend void  protobuf_AddDesc_Client2Server_2eproto();
+  friend void protobuf_AssignDesc_Client2Server_2eproto();
+  friend void protobuf_ShutdownFile_Client2Server_2eproto();
+
+  void InitAsDefaultInstance();
+  static C2S_Hello* default_instance_;
+};
 // ===================================================================
 
 
@@ -227,6 +313,35 @@ inline void C2S_Test::set_allocated_str(::std::string* str) {
     clear_has_str();
     str_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
+}
+
+// -------------------------------------------------------------------
+
+// C2S_Hello
+
+// repeated int32 aa = 1;
+inline int C2S_Hello::aa_size() const {
+  return aa_.size();
+}
+inline void C2S_Hello::clear_aa() {
+  aa_.Clear();
+}
+inline ::google::protobuf::int32 C2S_Hello::aa(int index) const {
+  return aa_.Get(index);
+}
+inline void C2S_Hello::set_aa(int index, ::google::protobuf::int32 value) {
+  aa_.Set(index, value);
+}
+inline void C2S_Hello::add_aa(::google::protobuf::int32 value) {
+  aa_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
+C2S_Hello::aa() const {
+  return aa_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
+C2S_Hello::mutable_aa() {
+  return &aa_;
 }
 
 

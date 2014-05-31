@@ -5,3 +5,8 @@ message C2S_Test
 	required int32 id = 1;
 	required string str = 2;
 }
+
+message C2S_Hello
+{
+	repeated int32 aa = 1;
+}

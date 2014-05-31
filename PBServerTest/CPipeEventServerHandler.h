@@ -7,6 +7,7 @@
 
 class CPipe;
 class C2S_Test;
+class C2S_Hello;
 
 class CPipeEventServerHandler
 	: public IPipeEventHandler
@@ -17,7 +18,7 @@ class CPipeEventServerHandler
 public:
 	CPipeEventServerHandler(CPipe* pipe);
 
-	virtual void OnRecv(const char* data, size_t sz);
+	virtual size_t OnRecv(const char* data, size_t sz);
 
 	void Send(const char* data, size_t sz);
 
@@ -25,6 +26,7 @@ public:
 
 	// msg handler
 	void OnRemoteMsg(const C2S_Test& msg);
+	void OnRemoteMsg(const C2S_Hello& msg);
 	// ---
 private:
 	CPipe* pipe_;

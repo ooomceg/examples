@@ -17,8 +17,8 @@ void CPipeEventServerHandler::Send(const char* data, size_t sz)
 	pipe_->Send(data, sz);
 }
 
-void CPipeEventServerHandler::OnRecv(const char* data, size_t sz)
+size_t CPipeEventServerHandler::OnRecv(const char* data, size_t sz)
 {
 	cout << "recv msg: " << sz << endl;
-	TPBMsgReceiver<CPipeEventServerHandler>::OnRecv((const uint8*)(data), sz);
+	return TPBMsgReceiver<CPipeEventServerHandler>::OnRecv((const uint8*)(data), sz);
 }

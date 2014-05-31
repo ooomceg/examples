@@ -56,9 +56,13 @@ void CPipe::ReadCB(bufferevent* bev, void* user_data)
 
 	char buf[1024];
 	int n;
-	while ((n = evbuffer_remove(input, buf, sizeof(buf))) > 0)
+	while ((n = evbuffer_copyout(input, buf, sizeof(buf))) > 0)
 	{
-		pipe->event_handler_->OnRecv(buf, n);
+		size_t used = pipe->event_handler_->OnRecv(buf, n);
+		if (used)
+		{
+			evbuffer_drain(input, used);
+		}
 	}
 }
 

@@ -30,7 +30,7 @@ void TPBMsgReceiver<HolderType>::OnRemoteMsg(const uint8* data, size_t sz)
 }
 
 template <typename HolderType>
-void TPBMsgReceiver<HolderType>::OnRecv(const uint8* data, size_t size)
+size_t TPBMsgReceiver<HolderType>::OnRecv(const uint8* data, size_t size)
 {
 	using google::protobuf::io::CodedInputStream;
 
@@ -40,14 +40,14 @@ void TPBMsgReceiver<HolderType>::OnRecv(const uint8* data, size_t size)
 
 	if (size < sizeof(buflen))
 	{
-		return;
+		return 0;
 	}
 
 	CodedInputStream::ReadLittleEndian32FromArray(data, &buflen);
 
 	if (buflen > size)
 	{
-		return;
+		return 0;
 	}
 	
 	CodedInputStream::ReadLittleEndian32FromArray(data+sizeof(buflen), &msgid);
@@ -56,8 +56,10 @@ void TPBMsgReceiver<HolderType>::OnRecv(const uint8* data, size_t size)
 	if (!func)
 	{
 		cerr << "invalid msg id: " << msgid << endl;
-		return;
+		return buflen;	// drop the data
 	}
 	
 	(this->*func)(data+prefixlen, buflen - prefixlen);
+
+	return buflen;
 }

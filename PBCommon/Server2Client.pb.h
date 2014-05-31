@@ -32,6 +32,7 @@ void protobuf_AssignDesc_Server2Client_2eproto();
 void protobuf_ShutdownFile_Server2Client_2eproto();
 
 class S2C_Test;
+class S2C_Hello;
 
 // ===================================================================
 
@@ -130,6 +131,95 @@ class S2C_Test : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static S2C_Test* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class S2C_Hello : public ::google::protobuf::Message {
+ public:
+  S2C_Hello();
+  virtual ~S2C_Hello();
+
+  S2C_Hello(const S2C_Hello& from);
+
+  inline S2C_Hello& operator=(const S2C_Hello& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const S2C_Hello& default_instance();
+
+  void Swap(S2C_Hello* other);
+
+  // implements Message ----------------------------------------------
+
+  S2C_Hello* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const S2C_Hello& from);
+  void MergeFrom(const S2C_Hello& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated string ss = 1;
+  inline int ss_size() const;
+  inline void clear_ss();
+  static const int kSsFieldNumber = 1;
+  inline const ::std::string& ss(int index) const;
+  inline ::std::string* mutable_ss(int index);
+  inline void set_ss(int index, const ::std::string& value);
+  inline void set_ss(int index, const char* value);
+  inline void set_ss(int index, const char* value, size_t size);
+  inline ::std::string* add_ss();
+  inline void add_ss(const ::std::string& value);
+  inline void add_ss(const char* value);
+  inline void add_ss(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& ss() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_ss();
+
+  // @@protoc_insertion_point(class_scope:S2C_Hello)
+ private:
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::RepeatedPtrField< ::std::string> ss_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  friend void  protobuf_AddDesc_Server2Client_2eproto();
+  friend void protobuf_AssignDesc_Server2Client_2eproto();
+  friend void protobuf_ShutdownFile_Server2Client_2eproto();
+
+  void InitAsDefaultInstance();
+  static S2C_Hello* default_instance_;
+};
 // ===================================================================
 
 
@@ -227,6 +317,54 @@ inline void S2C_Test::set_allocated_str(::std::string* str) {
     clear_has_str();
     str_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
+}
+
+// -------------------------------------------------------------------
+
+// S2C_Hello
+
+// repeated string ss = 1;
+inline int S2C_Hello::ss_size() const {
+  return ss_.size();
+}
+inline void S2C_Hello::clear_ss() {
+  ss_.Clear();
+}
+inline const ::std::string& S2C_Hello::ss(int index) const {
+  return ss_.Get(index);
+}
+inline ::std::string* S2C_Hello::mutable_ss(int index) {
+  return ss_.Mutable(index);
+}
+inline void S2C_Hello::set_ss(int index, const ::std::string& value) {
+  ss_.Mutable(index)->assign(value);
+}
+inline void S2C_Hello::set_ss(int index, const char* value) {
+  ss_.Mutable(index)->assign(value);
+}
+inline void S2C_Hello::set_ss(int index, const char* value, size_t size) {
+  ss_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* S2C_Hello::add_ss() {
+  return ss_.Add();
+}
+inline void S2C_Hello::add_ss(const ::std::string& value) {
+  ss_.Add()->assign(value);
+}
+inline void S2C_Hello::add_ss(const char* value) {
+  ss_.Add()->assign(value);
+}
+inline void S2C_Hello::add_ss(const char* value, size_t size) {
+  ss_.Add()->assign(reinterpret_cast<const char*>(value), size);
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+S2C_Hello::ss() const {
+  return ss_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+S2C_Hello::mutable_ss() {
+  return &ss_;
 }
 
 

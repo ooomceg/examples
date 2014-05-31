@@ -9,7 +9,7 @@ public:
 	template <typename MsgType>
 	void Send(const MsgType& msg);
 
-	void OnRecv(const uint8* data, size_t sz);
+	size_t OnRecv(const uint8* data, size_t sz);
 protected:
 	template <uint32 msgid>
 	void OnRemoteMsg(const uint8* data, size_t sz);

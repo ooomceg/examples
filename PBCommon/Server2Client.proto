@@ -5,3 +5,8 @@ message S2C_Test
 	required int32 id = 1;
 	required string str = 2;
 }
+
+message S2C_Hello
+{
+	repeated string ss = 1;
+}

@@ -3,12 +3,12 @@
 class IPipeEventHandler
 {
 public:
-	virtual void OnRecv(const char* data, size_t sz) = 0;
+	virtual size_t OnRecv(const char* data, size_t sz) = 0;
 };
 
 class CDefaultPipeEventHandler
 	: public IPipeEventHandler
 {
 public:
-	virtual void OnRecv(const char* data, size_t sz) { }
+	virtual size_t OnRecv(const char* data, size_t sz) { return sz; }
 };

@@ -6,6 +6,7 @@
 
 class CPipe;
 class S2C_Test;
+class S2C_Hello;
 
 class CPipeEventClientHandler
 	: public IPipeEventHandler
@@ -18,12 +19,13 @@ public:
 
 	void Send(const char* data, size_t sz);
 
-	virtual void OnRecv(const char* data, size_t sz);
+	virtual size_t OnRecv(const char* data, size_t sz);
 
 	static void InitMsgHandle();
 
 	// msg handler
 	void OnRemoteMsg(const S2C_Test& msg);
+	void OnRemoteMsg(const S2C_Hello& msg);
 	// ---
 private:
 	CPipe*			pipe_;
