@@ -15,12 +15,13 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Client2Server.pb.h" />
     <ClInclude Include="PBPtlC2S.h" />
-    <ClInclude Include="PBPtlBase.h" />
+    <ClInclude Include="GenCodeMacroDef.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Server2Client.proto" />
     <None Include="TPBMsgReceiver.inl" />
     <None Include="TPBMsgSender.inl" />
     <None Include="Client2Server.proto" />
+    <None Include="proto.rules" />
   </ItemGroup>
 </Project>

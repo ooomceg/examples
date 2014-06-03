@@ -3,11 +3,11 @@
 #include "TPBMsgReceiver.h"
 #include "TPBMsgSender.h"
 #include "ISend.h"
-
+#include "GenCodeMacroDef.h"
 
 class CPipe;
-class C2S_Test;
-class C2S_Hello;
+
+GENCODE_NETWORK_ALL_C2S(DECL);
 
 class CPipeEventServerHandler
 	: public IPipeEventHandler
@@ -25,8 +25,9 @@ public:
 	static void InitMsgHandle();
 
 	// msg handler
-	void OnRemoteMsg(const C2S_Test& msg);
-	void OnRemoteMsg(const C2S_Hello& msg);
+	//void OnRemoteMsg(const C2S_Test& msg);
+	//void OnRemoteMsg(const C2S_Hello& msg);
+	GENCODE_NETWORK_ALL_C2S(FUNDEF)
 	// ---
 private:
 	CPipe* pipe_;

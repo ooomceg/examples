@@ -85,8 +85,8 @@
   <ItemGroup>
     <ClInclude Include="BaseType.h" />
     <ClInclude Include="Client2Server.pb.h" />
+    <ClInclude Include="GenCodeMacroDef.h" />
     <ClInclude Include="ISend.h" />
-    <ClInclude Include="PBPtlBase.h" />
     <ClInclude Include="PBPtlC2S.h" />
     <ClInclude Include="PBPtlS2C.h" />
     <ClInclude Include="Server2Client.pb.h" />
@@ -96,6 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Client2Server.proto" />
+    <None Include="proto.rules">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Server2Client.proto" />
     <None Include="TPBMsgReceiver.inl" />
     <None Include="TPBMsgSender.inl" />

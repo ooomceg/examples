@@ -27,6 +27,8 @@ void CPipeEventServerHandler::OnRemoteMsg(const C2S_Hello& msg)
 	copy(msg.aa().begin(), msg.aa().end(), ostream_iterator<int>(cout, " "));
 	cout << endl;
 
+	istringstream iss;
+
 	S2C_Hello hello;
 	hello.add_ss("aaa");
 	hello.add_ss("bbb");

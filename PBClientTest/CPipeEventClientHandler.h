@@ -3,10 +3,11 @@
 #include "TPBMsgReceiver.h"
 #include "TPBMsgSender.h"
 #include "ISend.h"
+#include "GenCodeMacroDef.h"
 
 class CPipe;
-class S2C_Test;
-class S2C_Hello;
+
+GENCODE_NETWORK_ALL_S2C(DECL);
 
 class CPipeEventClientHandler
 	: public IPipeEventHandler
@@ -24,8 +25,9 @@ public:
 	static void InitMsgHandle();
 
 	// msg handler
-	void OnRemoteMsg(const S2C_Test& msg);
-	void OnRemoteMsg(const S2C_Hello& msg);
+	//void OnRemoteMsg(const S2C_Test& msg);
+	//void OnRemoteMsg(const S2C_Hello& msg);
+	GENCODE_NETWORK_ALL_S2C(FUNDEF);
 	// ---
 private:
 	CPipe*			pipe_;
